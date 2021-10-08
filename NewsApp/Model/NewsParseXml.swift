@@ -80,10 +80,11 @@ class NewsParseXmlImplement: NSObject, NewsParse,XMLParserDelegate
     func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?)
     {
         if elementName == "item" {
-            let imgURL = matches(for: "(http[^\\s]+(jpg|jpeg|png|tiff)\\b)", in: String(currentDescription))[0]
             
-
-            let rssItem = News(title: currentTitle, description: currentDescription.withoutHtml, pubDate: currentPubDate,imgURL: imgURL,link: currentLink)
+            var imgURL = ""
+            let imgURLArr = matches(for: "(http[^\\s]+(jpg|jpeg|png|tiff)\\b)", in: String(currentDescription))
+            imgURL = imgURLArr.first ?? ""
+            let rssItem = News(title: currentTitle, description: currentDescription.withoutHtml, pubDate: currentPubDate,imgURL: imgURL,link: currentLink,state : .new,imageData : Data())
             rssItems += [rssItem]
         }
     }

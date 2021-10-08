@@ -94,8 +94,8 @@ class NewsTableViewCell: UITableViewCell , NewsCellView{
         self.publicDate.text = publicDate
     }
     
-    func display(image: UIImage) {
-        self.thumbnailView.image = image
+    func display(image: Data) {
+        self.thumbnailView.image = UIImage(data: image)
     }
 
 }

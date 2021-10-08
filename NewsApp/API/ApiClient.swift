@@ -9,7 +9,6 @@
 import Foundation
 
 protocol ApiRequest {
-    
     var urlRequest: URLRequest { get }
 }
 
@@ -24,22 +23,14 @@ protocol URLSessionProtocol {
 extension URLSession: URLSessionProtocol { }
 
 class ApiClientImplementation: ApiClient {
-    
-    
     let urlSession: URLSessionProtocol
-    
-    
-    
     init(urlSessionConfiguration: URLSessionConfiguration, completionHandlerQueue: OperationQueue) {
         urlSession = URLSession(configuration: urlSessionConfiguration, delegate: nil, delegateQueue: completionHandlerQueue)
     }
     
-//    // This should be used mainly for testing purposes
-//    init(urlSession: URLSessionProtocol) {
-//        self.urlSession = urlSession
-//
-//    }
-    
+    init(urlSession: URLSessionProtocol) {
+        self.urlSession = urlSession
+    }
     // MARK: - ApiClient
     
     func execute<T>(request: ApiRequest, completionHandler: @escaping (Result<T>) -> Void) {
@@ -51,7 +42,7 @@ class ApiClientImplementation: ApiClient {
             }
             let successRange = 200...299
             if successRange.contains(httpUrlResponse.statusCode) {
-                completionHandler(.success(data as! T))
+                completionHandler(.success((data, response) as! T))
             } else {
                 completionHandler(.failure(ApiError(data: data, httpUrlResponse: httpUrlResponse)))
             }

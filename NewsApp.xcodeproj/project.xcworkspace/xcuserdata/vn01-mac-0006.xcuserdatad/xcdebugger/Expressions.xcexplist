@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "NewsViewController.tableView(_:numberOfRowsInSection:):NewsViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "newsPresenter!.numberOfNews">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "NewsPresenterImplementation.configure(cell:forRow:):NewsPresenter.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "news.title">
+            </PersistentString>
+            <PersistentString
+               value = "news.state">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

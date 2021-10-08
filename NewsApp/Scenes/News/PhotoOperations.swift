@@ -36,9 +36,9 @@ class ImageDownloader: Operation {
     
     //5
     
-    
     guard  let urlImagePath = URL(string: newsRecord.imgURL) else {
         print("URL path wrong")
+        newsRecord.state = .failed
         return
     }
     
@@ -47,7 +47,6 @@ class ImageDownloader: Operation {
         print("Cannot get Image : \(newsRecord.imgURL)")
         
         newsRecord.state = .failed
-        newsRecord.image = UIImage(named: "Failed") ??  UIImage()
         return
     }
     
@@ -58,11 +57,10 @@ class ImageDownloader: Operation {
     
     //7
     if !imageData.isEmpty {
-        newsRecord.image = UIImage(data:imageData) ?? UIImage()
+        newsRecord.imageData = imageData
         newsRecord.state = .downloaded
     } else {
         newsRecord.state = .failed
-        newsRecord.image = UIImage(named: "Failed") ?? UIImage()
     }
   }
 

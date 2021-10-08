@@ -6,10 +6,11 @@
 //
 
 import Foundation
+
 struct NewsApiRequest: ApiRequest {
     var urlRequest: URLRequest {
         let url: URL! = URL(string: "https://tuoitre.vn/rss/thoi-su.rss")
-        var request = URLRequest(url: url)
+        let request = URLRequest(url: url)
 //
 ////        request.setValue("application/vnd.fortech.books-list+json", forHTTPHeaderField: "Accept")
 //

@@ -9,38 +9,26 @@ import Foundation
 import UIKit
 
 
-protocol NewsView: AnyObject {
-    func refreshBooksView()
+protocol NewsView {
+    func refreshNewsView()
     func reloadRow(at indexPath: IndexPath)
-    func displayBooksRetrievalError(title: String, message: String)
-    func displayBookDeleteError(title: String, message: String)
-    func deleteAnimated(row: Int)
-    func endEditing()
+    func showDetailView(news : News)
+    func displayNewsRetrievalError(title: String, message: String)
+
 }
-
-
-// It would be fine for the cell view to declare a BookCellViewModel property and have it configure itself
-// Using this approach makes the view even more passive/dumb - but I can understand if some might consider it an overkill
 protocol NewsCellView {
     func display(title: String)
     func display(content: String)
     func display(publicDate: String)
-    func display(image: UIImage)
+    func display(image: Data)
 }
 
 protocol NewsPresenter {
     var numberOfNews: Int { get }
+    var news : [News] {get set}
     func getNews()
     func configure(cell: NewsCellView, forRow indexPath: IndexPath)
-    
-    //    func didSelect(row: Int)
-    //    func canEdit(row: Int) -> Bool
-    //    func titleForDeleteButton(row: Int) -> String
-    //    func deleteButtonPressed(row: Int)
-    //    func addButtonPressed()
-    
-    
-    
+    func didSelect(row: Int)
 }
 
 class NewsPresenterImplementation: NewsPresenter {
@@ -64,10 +52,9 @@ class NewsPresenterImplementation: NewsPresenter {
         if news.state == .new {
             fetchImage(indexPath: indexPath)
         }else {
-            cell.display(image : news.image )
+            cell.display(image:news.imageData )
         }
     }
-    
     
     
     func getNews() {
@@ -75,17 +62,21 @@ class NewsPresenterImplementation: NewsPresenter {
             switch result {
             case let .success(listNews):
                 self.news = listNews
-                self.view.refreshBooksView()
-            case let .failure(_):
-                print("")
-                
+                self.view.refreshNewsView()
+            case let .failure(err):
+                self.view.displayNewsRetrievalError(title: "Error", message: err.localizedDescription)
             }
         }
     }
     
+    
+    func didSelect(row: Int) {
+        view.showDetailView(news: self.news[row])
+
+    }
+    
     private  func fetchImage(indexPath: IndexPath) {
         startOperations(for: news[indexPath.row], at: indexPath)
-        
     }
     
     private func startOperations(for newsRecord: News, at indexPath: IndexPath) {
@@ -109,7 +100,6 @@ class NewsPresenterImplementation: NewsPresenter {
             if downloader.isCancelled {
                 return
             }
-            
             DispatchQueue.main.async { [weak self] in
                 self?.pendingOperations.downloadsInProgress.removeValue(forKey: indexPath)
                 print("downloader Operations complete ______: \(indexPath.row)")
