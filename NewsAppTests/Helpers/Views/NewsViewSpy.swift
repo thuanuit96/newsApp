@@ -8,6 +8,9 @@
 import Foundation
 @testable import NewsApp
 class  NewsViewSpy : NewsView {
+    
+    
+    
     var refreshNewsViewCalled = false
     var displayRetrievalErrorTitle = ""
     var displayRetrievalErrorMessage = ""

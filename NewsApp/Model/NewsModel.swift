@@ -24,10 +24,10 @@ class NewsModelImplementation: NewsModel {
         self.newsParse = newParse
     }
     func fetchNews(completionHandler :@escaping (Result<[News]>) -> Void) {
-        apiClient.execute(request:newsRequest) { (result: Result<Data>)  in
+        apiClient.execute(request:newsRequest) { (result: Result<ApiResponse>)  in
             switch result {
-            case let .success(data):
-                self.newsParse.parseNews(data: data) { resultParse in
+            case let .success(reponse):
+                self.newsParse.parseNews(data: reponse.data ?? Data()) { resultParse in
                     switch resultParse {
                         case let .success(listNews):
                             print("Data :\(  listNews[0])")

@@ -14,8 +14,16 @@ protocol NewsView {
     func reloadRow(at indexPath: IndexPath)
     func showDetailView(news : News)
     func displayNewsRetrievalError(title: String, message: String)
+    func presentView(view : UIViewController)
+    func showDialog()
 
 }
+extension NewsView {
+    func presentView(view: UIViewController) {}
+    func showDialog(){}
+    
+}
+
 protocol NewsCellView {
     func display(title: String)
     func display(content: String)
@@ -29,9 +37,13 @@ protocol NewsPresenter {
     func getNews()
     func configure(cell: NewsCellView, forRow indexPath: IndexPath)
     func didSelect(row: Int)
+    
+    func addNews()
 }
 
-class NewsPresenterImplementation: NewsPresenter {
+class NewsPresenterImplementation: NewsPresenter, AddNewsPresenterDelegate {
+    
+    
     let pendingOperations = PendingOperations()
     var newsModel : NewsModel
     let view : NewsView
@@ -75,6 +87,18 @@ class NewsPresenterImplementation: NewsPresenter {
 
     }
     
+    func addNews() {
+        let addViewController = AddNewsViewController()
+//        let router = AddNewsViewRouterImplementation(addNewsViewController: addViewController)
+        let config =  AddNewConfiguratorImplementation(addNewsPresenterDelegate: self)
+        config.configure(addNewsViewController: addViewController)
+        addViewController.configurator = config
+        
+        
+        view.presentView(view: addViewController)
+    }
+    
+    
     private  func fetchImage(indexPath: IndexPath) {
         startOperations(for: news[indexPath.row], at: indexPath)
     }
@@ -107,5 +131,22 @@ class NewsPresenterImplementation: NewsPresenter {
                 self?.view.reloadRow(at: indexPath)
             }
         }
+    }
+    
+    
+    func addBookPresenter(_ presenter: AddNewsPresenter, didAdd news: News) {
+        //close addView
+        presenter.dismiss()
+        //
+        self.view.showDialog()
+        //refresh list data
+        self.news.append(news)
+        self.view.refreshNewsView()
+        
+    }
+    
+    func addBookPresenterCancel(presenter: AddNewsPresenter) {
+        presenter.dismiss()
+
     }
 }

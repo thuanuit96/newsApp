@@ -3,6 +3,14 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "closure #1 in ApiClientTest.test_execute_non_2xx_response_code():ApiClientTest.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "expectedData?.base64EncodedString()">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "NewsViewController.tableView(_:numberOfRowsInSection:):NewsViewController.swift">
          <PersistentStrings>
             <PersistentString

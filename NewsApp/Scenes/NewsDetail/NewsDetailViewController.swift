@@ -21,6 +21,9 @@ class NewsDetailViewController: UIViewController  ,NewsDetailView{
     }()
     override func viewDidLoad() {
         view.addSubview(webView)
+        
+        self.view.accessibilityIdentifier = "detailView"
+
         NSLayoutConstraint.activate([
                                         webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                                         webView.topAnchor.constraint(equalTo: view.topAnchor),

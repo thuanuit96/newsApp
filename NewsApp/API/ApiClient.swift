@@ -42,7 +42,7 @@ class ApiClientImplementation: ApiClient {
             }
             let successRange = 200...299
             if successRange.contains(httpUrlResponse.statusCode) {
-                completionHandler(.success((data, response) as! T))
+                completionHandler(.success(ApiResponse(data: data, httpUrlResponse: httpUrlResponse) as! T))
             } else {
                 completionHandler(.failure(ApiError(data: data, httpUrlResponse: httpUrlResponse)))
             }

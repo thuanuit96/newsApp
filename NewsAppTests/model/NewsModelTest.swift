@@ -14,11 +14,16 @@ class NewsModelTest: XCTestCase {
     var newsModel: NewsModel!
     let newsRequest =  NewsApiRequest()
     let newParseDataSpy = NewsParseDataSpy()
+    
+    var apiClient : ApiClientImplementation!
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         super.setUp()
-        newsModel = NewsModelImplementation(apiClient: apiClientSpy, newsRequest: newsRequest, newParse: newParseDataSpy)
+        
+        apiClient =  ApiClientImplementation(urlSessionConfiguration: URLSessionConfiguration.default,
+                                                completionHandlerQueue: OperationQueue.main)
+        newsModel = NewsModelImplementation(apiClient: apiClient, newsRequest: newsRequest, newParse: newParseDataSpy)
         
     }
     
@@ -26,11 +31,13 @@ class NewsModelTest: XCTestCase {
         // Given
         let newsToReturn = FakeData.createNewsArray()
         let expectedResultToBeReturned: Result<[News]> = .success(newsToReturn)
-        apiClientSpy.resultToBeReturned = .success(Data())
+        apiClientSpy.resultToBeReturned = .success(ApiResponse(data: Data(), httpUrlResponse: HTTPURLResponse(statusCode: 200)))
         newParseDataSpy.resultToBeReturned = expectedResultToBeReturned
         let fetchNewsCompletionHandlerExpectation = expectation(description: "Fetch news completion handler expectation")
         // When
         newsModel.fetchNews { (result) in
+            
+
             // Then
             XCTAssertTrue(expectedResultToBeReturned == result, "The expected result wasn't returned")
             fetchNewsCompletionHandlerExpectation.fulfill()
@@ -56,7 +63,9 @@ class NewsModelTest: XCTestCase {
     }
     
     
-
+    
+    
+  
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }

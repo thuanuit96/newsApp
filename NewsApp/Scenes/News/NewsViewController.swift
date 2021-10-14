@@ -30,6 +30,11 @@ class NewsViewController: UIViewController, NewsView {
         return tbView
     }()
     
+    lazy var addButton : UIBarButtonItem = {
+        let bt = UIBarButtonItem(title: "Add", style: .plain, target: self, action: #selector(self.addButtonPressed(_:)))
+        return bt
+    }()
+    
     override func viewDidLoad() {
         self.tableView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(tableView)
@@ -41,6 +46,10 @@ class NewsViewController: UIViewController, NewsView {
         self.tableView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
         self.tableView.bottomAnchor.constraint(equalTo : self.view.bottomAnchor).isActive = true
 //        NSLayoutConstraint.activate([leading,trailing,top,bottom])
+        self.navigationItem.rightBarButtonItem = addButton
+        
+        view.accessibilityIdentifier = "listNewsView"
+
         
         let apiClient = ApiClientImplementation(urlSessionConfiguration: URLSessionConfiguration.default,
                                                 completionHandlerQueue: OperationQueue.main)
@@ -58,6 +67,27 @@ class NewsViewController: UIViewController, NewsView {
         let presenter = NewsDetailsPresenterImplementation(view: detailViewController, news: news)
         detailViewController.presenter = presenter
         self.present(detailViewController, animated: true, completion: nil)
+    }
+    
+    @objc func addButtonPressed(_ sender: Any) {
+        newsPresenter?.addNews()
+       
+    }
+    func presentView(view: UIViewController) {
+        self.navigationController?.pushViewController(view, animated: true)
+    }
+    
+    
+    func showDialog() {
+        presentAlert(with: "Success", message: "add News success")
+    }
+    
+    private func presentAlert(with title: String, message: String) {
+        let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
+ 
+        alertVC.addAction(.init(title: "Ok", style: .default, handler: nil))
+
+        present(alertVC, animated: true, completion: nil)
     }
 }
 

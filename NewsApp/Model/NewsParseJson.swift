@@ -11,12 +11,11 @@ class NewsParseJson: NSObject, NewsParse {
     
     func parseNews(data: Data, completionHandler: @escaping ((Result<[News]>) -> Void)) {
         let decoder = JSONDecoder()
-        
         do {
             let reponseData = try decoder.decode(ResponseData.self, from: data)
             completionHandler(.success(reponseData.listNews))
         } catch {
-            completionHandler(.failure(error))
+            completionHandler(.failure(NSError.createPraseError()))
         }
       
     }

@@ -36,6 +36,16 @@ struct ApiParseError: Error {
     }
 }
 
+struct ApiResponse {
+    let httpUrlResponse: HTTPURLResponse
+    let data: Data?
+    
+    init(data: Data?, httpUrlResponse: HTTPURLResponse) {
+        self.httpUrlResponse = httpUrlResponse
+        self.data = data
+    }
+}
+
 // Some endpoints might return a 204 No Content
 struct VoidResponse: Decodable { }
 

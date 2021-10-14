@@ -7,6 +7,16 @@
 
 import Foundation
 
+
+struct AddNewsParameter {
+    var title: String
+    var content: String
+    var publicDate: Date?
+    var link : String
+    var imgURL : String
+    
+}
+
 enum PhotoState : String ,Codable  {
     case new, downloaded, failed
 }

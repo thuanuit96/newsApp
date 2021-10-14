@@ -10,7 +10,8 @@ import Foundation
 
 
 class ApiClientSpy: ApiClient {
-    var resultToBeReturned: Result<Data>!
+    var resultToBeReturned: Result<ApiResponse>!
+    
     func execute<T>(request: ApiRequest, completionHandler: @escaping (Result<T>) -> Void) {
         completionHandler(resultToBeReturned as! Result<T>)
     }

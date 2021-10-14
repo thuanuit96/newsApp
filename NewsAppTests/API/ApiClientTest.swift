@@ -22,9 +22,6 @@ class ApiClientTest: XCTestCase {
     
     func test_execute_successful_http_response_parses_ok() {
         // Given
-        
-        // Normally to mock JSON responses you should use a Dictionary and convert it to JSON using JSONSerialization.data
-        // In our example here we don't care about the actual JSON, we care about the data regardless of its format it would have
         let expectedUtf8StringResponse = "{\"SomeProperty\":\"SomeValue\"}"
         let expectedData = expectedUtf8StringResponse.data(using: .utf8)
         let expected2xxReponse = HTTPURLResponse(statusCode: 200)
@@ -34,26 +31,77 @@ class ApiClientTest: XCTestCase {
         let executeCompletionHandlerExpectation = expectation(description: "Add book completion handler expectation")
         
         // When
-        apiClient.execute(request: NewsApiRequest()) { (result : Result<URLSessionCompletionHandlerResponse>)  in
+        apiClient.execute(request: NewsApiRequest()) { (result : Result<ApiResponse>)  in
             
             // Then
             guard let response = try? result.get() else {
                 XCTFail("A successfull response should've been returned")
                 return
             }
-            
-            
-            print("response :\(response)")
-//
-//            XCTAssertEqual(expectedUtf8StringResponse, response.entity.utf8String, "The string is not the expected one")
-//            XCTAssertTrue(expected2xxReponse === response.httpUrlResponse, "The http response is not the expected one")
-//            XCTAssertEqual(expectedData?.base64EncodedString(), response.data?.base64EncodedString(), "Data doesn't match")
-            
+            XCTAssertEqual(expectedData?.base64EncodedString(), response.data?.base64EncodedString(), "Data doesn't match")
+            XCTAssertTrue(expected2xxReponse === response.httpUrlResponse, "The http response is not the expected one")
             executeCompletionHandlerExpectation.fulfill()
         }
         waitForExpectations(timeout: 1, handler: nil)
 
     }
+    
+    func test_execute_non_2xx_response_code() {
+        let expectedUtf8StringResponse = "{ \"SomeProperty\" : \"SomeValue\" }"
+        let expectedData = expectedUtf8StringResponse.data(using: .utf8)
+        let expected4xxReponse = HTTPURLResponse(statusCode: 400)
+        
+        urlSessionStub.enqueue(response: (data: expectedData, response: expected4xxReponse, error: nil))
+        
+        let executeCompletionHandlerExpectation = expectation(description: "completion handler expectation")
+        
+        // When
+        apiClient.execute(request: NewsApiRequest()) { (result: Result<ApiResponse>) in
+            // Then
+            do {
+                let _ = try result.get()
+                XCTFail("Expected api error to be thrown")
+            } catch let error as ApiError {
+                XCTAssertTrue(expected4xxReponse === error.httpUrlResponse, "The http response is not the expected one")
+                XCTAssertEqual(expectedData?.base64EncodedString(), error.data?.base64EncodedString(), "Data doesn't match")
+            } catch {
+                XCTFail("Expected api error to be thrown")
+            }
+            
+            executeCompletionHandlerExpectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: 1, handler: nil)
+    }
+    
+    func test_execute_error_no_httpurlresponse() {
+        // Given
+        let expectedErrorMessage = "Some random network error"
+        let expectedError = NSError.createError(withMessage: expectedErrorMessage)
+        
+        urlSessionStub.enqueue(response: (data: nil, response: nil, error: expectedError))
+        
+        let executeCompletionHandlerExpectation = expectation(description: "Add book completion handler expectation")
+        
+        
+        // When
+        apiClient.execute(request: NewsApiRequest()) { (result:Result<ApiResponse>) in
+            // Then
+            do {
+                let _ = try result.get()
+                XCTFail("Expected network error to be thrown")
+            } catch let error as NetworkRequestError {
+                XCTAssertEqual(expectedErrorMessage, error.localizedDescription, "Error message doesn't match")
+            } catch {
+                XCTFail("Expected network error to be thrown")
+            }
+            
+            executeCompletionHandlerExpectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: 1, handler: nil)
+    }
+    
     
 
     override func tearDownWithError() throws {
